@@ -16,8 +16,8 @@
       <VBox fx:id="USD_rate" maxWidth="200.0" prefHeight="200.0" prefWidth="150.0" BorderPane.alignment="CENTER">
          <children>
             <Label prefHeight="17.0" prefWidth="89.0" text="Exchange Rates" />
-            <Label text="USD" />
-            <Label fx:id="gbp_rate" text="GBP" />
+            <Label fx:id="usd_price" text="USD" />
+            <Label fx:id="gbp_price" text="GBP" />
             <Label fx:id="eur_price" text="EUR" />
             <Label fx:id="update_time" text="Time Updated" />
          </children>

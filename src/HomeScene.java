@@ -14,10 +14,15 @@ public class HomeScene {
 
         try {
             FXMLLoader loader = new FXMLLoader();
-            this.controller = new homeController(stage);
+            this.controller = new homeController();
             loader.setController(controller);
-            Parent root = loader.load(getClass().getResource("homeView.fxml"));
+            Parent root = loader.load(getClass()
+                    .getResource("homeView.fxml")
+                    .openStream());
+
+
             Scene scene = new Scene(root, 600, 400);
+
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (Exception e) {
