@@ -6,6 +6,7 @@ public class main {
                 new BTCExRateAPI();
                 System.out.println(BTCExRateAPI.getPriceGBP());
                 System.out.println(BTCExRateAPI.getPriceUSD());
+                System.out.println(BTCExRateAPI.getPriceEUR());
                 System.out.println(BTCExRateAPI.getDateTime());
         }
 }
