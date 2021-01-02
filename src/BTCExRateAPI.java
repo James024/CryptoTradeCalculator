@@ -3,8 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Stack;
+import java.util.*;
 
 public class BTCExRateAPI {
 
@@ -27,24 +26,62 @@ public class BTCExRateAPI {
     }
 
     public static String[] interpretResponse(String response) {
-        String[] split = response.split("code");
-        Stack<Integer> openCurlys = new Stack<>();
-        Stack<Integer> closeCurlys = new Stack<>();
+        String[] split = response.split("");
 
-        Boolean open = false;
+        ArrayList<String> strings = new ArrayList<>();
 
-        for (int i = 1, splitLength = split.length; i < splitLength; i++) {
+        Stack<Integer> openers = new Stack<>();
+
+        for (int i = 0, splitLength = split.length; i < splitLength; i++) {
             String current = split[i];
 
-            if(current.equals("{")){
-                openCurlys.push(i);
-            } else if (current.equals("}")){
-                closeCurlys.push(i);
+            if(current.equals("{")) {
+                strings.add(getContents(response.substring(i), "{"));
             }
-
         }
 
+        return strings.toArray(new String[0]);
 
-        return response.split(",");
+    }
+
+    //returns the string between boundary
+    public static String getContents(String sequence, String boundary){
+        String foundSequence = "";
+
+        ArrayList<String> strings = new ArrayList<>();
+
+        String[] split = sequence.split("");
+
+        Stack<Integer> openers = new Stack<>();
+
+        String closer;
+
+        switch (boundary){
+            case "{":
+                closer = "}";
+                break;
+            case "[":
+                closer = "]";
+                break;
+            case "(":
+                closer = ")";
+                break;
+            default:
+                closer = boundary;
+        }
+
+        for (int i = 0, splitLength = split.length; i < splitLength; i++) {
+            String current = split[i];
+
+            if(current.equals(boundary)) {
+                openers.push(i);
+
+            } else if (current.equals(closer)){
+                foundSequence = sequence.substring(openers.pop()+1,i);
+            }
+        }
+
+        return foundSequence;
+
     }
 }
