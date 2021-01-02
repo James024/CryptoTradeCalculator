@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -5,8 +6,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class homeController implements Initializable {
 
@@ -78,5 +83,32 @@ public class homeController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.cb_btc_amt.setText("30000");
+
+
     }
+
+    public void updateExchangeRates(String[] data){
+        this.usd_price.setText(data[0]);
+        this.gbp_price.setText(data[1]);
+        this.eur_price.setText(data[2]);
+        this.update_time.setText(data[3]);
+    }
+
+    public void setUsd_price(String price) {
+        this.usd_price.setText("USD: "+price);
+    }
+
+    public void setGbp_price(String price) {
+        this.gbp_price.setText("GBP: "+price);
+    }
+
+    public void setEur_price(String price) {
+        this.eur_price.setText("EUR: "+price);
+    }
+
+    public void setUpdate_time(String time) {
+        this.update_time.setText("Updated: "+time);
+    }
+
+
 }

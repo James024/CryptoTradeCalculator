@@ -12,9 +12,9 @@ public class BTCExRateAPI {
 
     private static String dateTime;
 
-    private static float priceUSD;
-    private static float priceGBP;
-    private static float priceEUR;
+    private static String priceUSD;
+    private static String priceGBP;
+    private static String priceEUR;
 
 
     private static final String ExchangeRatesURL =
@@ -71,19 +71,19 @@ public class BTCExRateAPI {
     private static void InterpretPrice(String data){
         String[] dataArray = data.split(",");
         String code = dataArray[0].substring(8, 11);
-        String rateFloat = dataArray[5].substring(13,21);
+        String rateFloat = dataArray[5].substring(13,dataArray[5].length());
 
         switch(code){
             case "USD":
-                priceUSD = Float.parseFloat(rateFloat);
+                priceUSD = rateFloat;
                 break;
 
             case "GBP":
-                priceGBP = Float.parseFloat(rateFloat);
+                priceGBP = rateFloat;
                 break;
 
             case "EUR":
-                priceEUR = Float.parseFloat(rateFloat);
+                priceEUR = rateFloat;
                 break;
         }
     }
@@ -92,15 +92,31 @@ public class BTCExRateAPI {
         return dateTime;
     }
 
-    public static float getPriceUSD() {
+    public static float getFloatUSD() {
+        return Float.parseFloat(priceUSD);
+    }
+
+    public static float getFloatGBP() {
+        return Float.parseFloat(priceGBP);
+    }
+
+    public static float getFloatEUR() {
+        return Float.parseFloat(priceEUR);
+    }
+
+    public static String getPriceUSD() {
         return priceUSD;
     }
 
-    public static float getPriceGBP() {
+    public static String getPriceGBP() {
         return priceGBP;
     }
 
-    public static float getPriceEUR() {
+    public static String getPriceEUR() {
         return priceEUR;
+    }
+
+    public static String[] getPageInfo() {
+        return new String[]{priceUSD,priceGBP,priceEUR,dateTime};
     }
 }

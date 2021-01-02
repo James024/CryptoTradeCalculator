@@ -1,9 +1,12 @@
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class HomeScene {
     private Stage primaryStage;
@@ -23,6 +26,47 @@ public class HomeScene {
 
             Scene scene = new Scene(root, 600, 400);
 
+
+            // long-running operation runs on different thread
+            Thread thread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        new BTCExRateAPI();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    controller.updateExchangeRates(BTCExRateAPI.getPageInfo());
+                    
+                    Runnable updater = () -> {
+
+                        try {
+                            new BTCExRateAPI();
+                            controller.updateExchangeRates(BTCExRateAPI.getPageInfo());
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    };
+
+                    while (true) {
+                        try {
+                            Thread.sleep(30000);
+                        } catch (InterruptedException ignored){
+                        }
+
+                        // UI update is on the Application thread
+                        Platform.runLater(updater);
+                    }
+                }
+            });
+
+            // dont let thread prevent JVM shutdown
+            thread.setDaemon(true);
+            thread.start();
+
+
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (Exception e) {
@@ -33,5 +77,9 @@ public class HomeScene {
             error.showAndWait();
 
         }
+    }
+
+    public homeController getController() {
+        return controller;
     }
 }
