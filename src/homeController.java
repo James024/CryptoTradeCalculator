@@ -4,6 +4,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -78,20 +79,116 @@ public class homeController implements Initializable {
     private Label eur_price;
     @FXML
     private Label update_time;
+    @FXML
+    private Button refresh;
+
+    private String[] data;
+
+    private String currCode = "USD";
+
+    private Float currExchangeRate;
+
+    private Float btcAmount;
+
+    private Float finalPrice;
+
+    private Float currPrice = 0f;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.cb_btc_amt.setText("30000");
-
-
+        refresh.setOnAction(event -> updateExchangeRates());
+        usd_button.setOnAction(event -> calculate());
     }
 
-    public void updateExchangeRates(String[] data){
-        this.usd_price.setText(data[0]);
-        this.gbp_price.setText(data[1]);
-        this.eur_price.setText(data[2]);
-        this.update_time.setText(data[3]);
+    public void calculate(){
+        setBtcAmount();
+        setExchangeRate();
+        calculateBitPanda();
+    }
+
+    public void setBtcAmount(){
+        btcAmount = Float.parseFloat(btc_amount_input.getText());
+    }
+
+    public void setFinalPrice(){
+        finalPrice = Float.parseFloat(final_price_input.getText());
+    }
+
+    public void setExchangeRate(){
+        int code;
+
+        switch (currCode) {
+            case "GBP":
+                code = 1;
+                break;
+            case "EUR":
+                code = 2;
+                break;
+            default:
+                code = 0;
+        }
+        currExchangeRate = Float.parseFloat(data[code]);
+    }
+
+
+    public void calculateBitPanda(){
+        BitPandaCalc bpCalc = new BitPandaCalc();
+        if(btc_amount_input.getText() != null){
+            bp_btc_amt.setText(btc_amount_input.getText());
+            bp_ex_rate.setText(data[0]);
+            bp_final_price.setText(String.valueOf(bpCalc.FinalPrice(btcAmount, currExchangeRate)));
+            bp_percentage.setText(bpCalc.percentageIncrease() + "%");
+        }
+    }
+
+    public void checkChange(String lastUpdate, Float lastPrice) {
+        if(data[3].equals(lastUpdate)){
+            this.update_time.setText(data[3]+" -SAME ");
+
+        } else {
+
+            if(this.currPrice>lastPrice){
+                usd_price.setTextFill(Color.GREEN);
+                gbp_price.setTextFill(Color.GREEN);
+                eur_price.setTextFill(Color.GREEN);
+            } else if (this.currPrice<lastPrice){
+                usd_price.setTextFill(Color.RED);
+                gbp_price.setTextFill(Color.RED);
+                eur_price.setTextFill(Color.RED);
+            } else {
+                usd_price.setTextFill(Color.ORANGE);
+                gbp_price.setTextFill(Color.ORANGE);
+                eur_price.setTextFill(Color.ORANGE);
+            }
+        }
+    }
+
+    public void updateExchangeRates(){
+
+        String lastUpdate = this.data[3];
+        Float lastPrice = this.currPrice;
+
+        refreshExchangeRates();
+        checkChange(lastUpdate,lastPrice);
+    }
+
+    public void refreshExchangeRates(){
+
+        try {
+            new BTCExRateAPI();
+            this.data = BTCExRateAPI.getPageInfo();
+
+            this.currPrice = Float.valueOf(data[0]);
+
+            this.usd_price.setText(data[0]);
+            this.gbp_price.setText(data[1]);
+            this.eur_price.setText(data[2]);
+            this.update_time.setText(data[3]);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setUsd_price(String price) {
@@ -109,6 +206,4 @@ public class homeController implements Initializable {
     public void setUpdate_time(String time) {
         this.update_time.setText("Updated: "+time);
     }
-
-
 }

@@ -24,7 +24,7 @@ public class HomeScene {
                     .openStream());
 
 
-            Scene scene = new Scene(root, 600, 400);
+            Scene scene = new Scene(root, 700, 400);
 
 
             // long-running operation runs on different thread
@@ -32,22 +32,14 @@ public class HomeScene {
 
                 @Override
                 public void run() {
-                    try {
-                        new BTCExRateAPI();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    controller.updateExchangeRates(BTCExRateAPI.getPageInfo());
+
+                    //run so data is there when loads
+                    controller.refreshExchangeRates();
                     
                     Runnable updater = () -> {
 
-                        try {
-                            new BTCExRateAPI();
-                            controller.updateExchangeRates(BTCExRateAPI.getPageInfo());
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        //is run after 30 second wait
+                        controller.updateExchangeRates();
                     };
 
                     while (true) {
