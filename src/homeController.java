@@ -86,36 +86,37 @@ public class homeController implements Initializable {
 
     private String currCode = "USD";
 
-    private Float currExchangeRate;
+    private Float exchangeRate;
 
     private Float btcAmount;
 
     private Float finalPrice;
+
+    private Float customRate;
 
     private Float currPrice = 0f;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //run so data is there when loads
+        refreshExchangeRates();
         refresh.setOnAction(event -> updateExchangeRates());
         usd_button.setOnAction(event -> calculate());
     }
 
     public void calculate(){
-        setBtcAmount();
-        setExchangeRate();
-        calculateBitPanda();
+
+        interpretCustomExchangeRate();
+        interpretFinalPrice();
+        Boolean myBool = interpretBitcoinAmount();
+        setExchangeRate(selectExchangeRate());
+        calculateBitPanda(myBool);
+        calculateLocalBitcoins(myBool);
     }
 
-    public void setBtcAmount(){
-        btcAmount = Float.parseFloat(btc_amount_input.getText());
-    }
 
-    public void setFinalPrice(){
-        finalPrice = Float.parseFloat(final_price_input.getText());
-    }
-
-    public void setExchangeRate(){
+    public float selectExchangeRate(){
         int code;
 
         switch (currCode) {
@@ -128,18 +129,88 @@ public class homeController implements Initializable {
             default:
                 code = 0;
         }
-        currExchangeRate = Float.parseFloat(data[code]);
+        return Float.parseFloat(data[code]);
+    }
+
+    public void setFinalPrice(Float finalPrice) {
+        this.finalPrice = finalPrice;
+    }
+
+    public void setBtcAmount(Float btcAmount) {
+        this.btcAmount = btcAmount;
+    }
+
+    public void setExchangeRate(Float exchangeRate) {
+        this.exchangeRate = exchangeRate;
+    }
+
+    public void setCustomRate(Float customRate) {
+        this.customRate = customRate;
+    }
+
+    public Boolean interpretBitcoinAmount(){
+        String amount = btc_amount_input.getText();
+        if(!amount.isEmpty()){
+            setBtcAmount(Float.parseFloat(amount));
+            return true;
+        } else {
+            setBtcAmount(null);
+            return false;
+        }
+    }
+
+    private void interpretCustomExchangeRate(){
+        String rate = exchange_rate_input.getText();
+        if(!rate.isEmpty()){
+            setCustomRate(Float.parseFloat(rate));
+        } else {
+            setCustomRate(null);
+        }
+    }
+
+    private Boolean interpretFinalPrice(){
+        String price = final_price_input.getText();
+        if(!price.isEmpty()){
+            setFinalPrice(Float.parseFloat(price));
+            return true;
+        } else {
+            setFinalPrice(null);
+            return false;
+        }
     }
 
 
-    public void calculateBitPanda(){
-        BitPandaCalc bpCalc = new BitPandaCalc();
-        if(btc_amount_input.getText() != null){
-            bp_btc_amt.setText(btc_amount_input.getText());
-            bp_ex_rate.setText(data[0]);
-            bp_final_price.setText(String.valueOf(bpCalc.FinalPrice(btcAmount, currExchangeRate)));
-            bp_percentage.setText(bpCalc.percentageIncrease() + "%");
+
+    public void calculateBitPanda(Boolean amtSet){
+
+        if(amtSet){
+            finalPrice = null;
+        } else {
+            btcAmount = null;
         }
+
+        BitPandaCalc bpCalc = new BitPandaCalc( btcAmount, exchangeRate, finalPrice);
+        bp_btc_amt.setText(String.valueOf(bpCalc.getBtcAmount()));
+        bp_ex_rate.setText(String.valueOf(bpCalc.getExchangeRate()));
+        bp_real_price.setText(String.valueOf(bpCalc.getRealPrice()));
+        bp_final_price.setText(String.valueOf(bpCalc.getFinalPrice()));
+        bp_percentage.setText(bpCalc.getPercentageChange() + "%");
+    }
+
+    public void calculateLocalBitcoins(Boolean amtSet){
+
+        if(amtSet){
+            finalPrice = null;
+        } else {
+            btcAmount = null;
+        }
+
+        LocalBitcoinCalc lbCalc = new LocalBitcoinCalc(btcAmount, customRate, exchangeRate, finalPrice);
+        lb_btc_amt.setText(String.valueOf(lbCalc.getBtcAmount()));
+        lb_ex_rate.setText(String.valueOf(lbCalc.getExchangeRate()));
+        lb_real_price.setText(String.valueOf(lbCalc.getRealPrice()));
+        lb_final_price.setText(String.valueOf(lbCalc.getFinalPrice()));
+        lb_percentage.setText(lbCalc.getPercentageChange() + "%");
     }
 
     public void checkChange(String lastUpdate, Float lastPrice) {

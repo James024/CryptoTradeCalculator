@@ -21,7 +21,7 @@ public class BTCExRateAPI {
             "https://api.coindesk.com/v1/bpi/currentprice.json";
 
     public BTCExRateAPI() throws IOException {
-        interpretResponse(readPage());
+        InterpretResponse(readPage());
     }
 
     private static String readPage() throws IOException {
@@ -37,7 +37,7 @@ public class BTCExRateAPI {
         return response;
     }
 
-    private static void interpretResponse(String response) {
+    private static void InterpretResponse(String response) {
         String[] split = response.split("");
         Stack<Integer> openCurlys = new Stack<>();
 

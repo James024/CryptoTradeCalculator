@@ -12,11 +12,6 @@ public class Main extends Application {
     }
 
         public static void main (String[]args) throws IOException {
-            new BTCExRateAPI();
-            System.out.println(BTCExRateAPI.getPriceGBP());
-            System.out.println(BTCExRateAPI.getPriceUSD());
-            System.out.println(BTCExRateAPI.getPriceEUR());
-            System.out.println(BTCExRateAPI.getDateTime());
 
             launch(args);
 

@@ -32,9 +32,6 @@ public class HomeScene {
 
                 @Override
                 public void run() {
-
-                    //run so data is there when loads
-                    controller.refreshExchangeRates();
                     
                     Runnable updater = () -> {
 
