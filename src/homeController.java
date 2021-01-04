@@ -103,16 +103,10 @@ public class homeController implements Initializable {
         refreshExchangeRates();
         refresh.setOnAction(event -> updateExchangeRates());
         usd_button.setOnAction(event -> calculate());
-    }
+        btc_amount_input.setOnAction(event -> calculate());
+        final_price_input.setOnAction(event -> calculate());
+        exchange_rate_input.setOnAction(event -> interpretCustomExchangeRate());
 
-    public void calculate(){
-
-        interpretCustomExchangeRate();
-        interpretFinalPrice();
-        Boolean myBool = interpretBitcoinAmount();
-        setExchangeRate(selectExchangeRate());
-        calculateBitPanda(myBool);
-        calculateLocalBitcoins(myBool);
     }
 
 
@@ -179,7 +173,27 @@ public class homeController implements Initializable {
         }
     }
 
+    public void calculatePrice(){
+        finalPrice = null;
+    }
 
+    public void calculateAmount(){
+        btcAmount = null;
+        
+    }
+
+    public void calculate(String reference){
+
+        interpretCustomExchangeRate();
+
+
+
+        interpretFinalPrice();
+        Boolean myBool = interpretBitcoinAmount();
+        setExchangeRate(selectExchangeRate());
+        calculateBitPanda(myBool);
+        calculateLocalBitcoins(myBool);
+    }
 
     public void calculateBitPanda(Boolean amtSet){
 
