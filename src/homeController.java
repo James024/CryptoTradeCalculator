@@ -102,11 +102,28 @@ public class homeController implements Initializable {
         //run so data is there when loads
         refreshExchangeRates();
         refresh.setOnAction(event -> updateExchangeRates());
-        usd_button.setOnAction(event -> calculate());
-        btc_amount_input.setOnAction(event -> calculate());
-        final_price_input.setOnAction(event -> calculate());
+        usd_button.setOnAction(event -> setCurrency("USD"));
+        gbp_button.setOnAction(event -> setCurrency("GBP"));
+        eur_button.setOnAction(event -> setCurrency("EUR"));
+        btc_amount_input.setOnAction(event -> calculatePrice());
+        final_price_input.setOnAction(event -> calculateAmount());
         exchange_rate_input.setOnAction(event -> interpretCustomExchangeRate());
 
+    }
+
+    public void setCurrency(String newCode){
+
+        switch (newCode) {
+            case "GBP":
+                currCode = "GBP";
+                break;
+            case "EUR":
+                currCode = "EUR";
+                break;
+            default:
+                currCode = "USD";
+        }
+        selectExchangeRate();
     }
 
 
@@ -185,9 +202,6 @@ public class homeController implements Initializable {
     public void calculate(String reference){
 
         interpretCustomExchangeRate();
-
-
-
         interpretFinalPrice();
         Boolean myBool = interpretBitcoinAmount();
         setExchangeRate(selectExchangeRate());
